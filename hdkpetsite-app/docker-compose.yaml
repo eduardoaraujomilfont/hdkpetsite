@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  hdkpetsite:
+    build: .
+    ports:
+      - "8080:80"
+      - "8000:8000"
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - app-networks
+    depends_on:
+      - mysql
+    # command:
+      # - ./server.sh
+      
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "8880:3306"
+    volumes:
+      - hdkpetsitedb:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=remote
+      - MYSQL_DATABASE=remote
+    networks:
+      - app-networks
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: remote
+    ports:
+      - "8888:80"
+    networks:
+      - app-networks
+
+networks:
+  app-networks:
+    driver: bridge
+
+volumes:
+  hdkpetsitedb: {}
